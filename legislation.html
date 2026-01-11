@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legislation | Nashville EV Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #2c3e50;
+            --navy-dark: #1a252f;
+            --navy-light: #34495e;
+            --gold: #f1c40f;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --green: #22c55e;
+            --green-light: #dcfce7;
+            --amber: #f59e0b;
+            --amber-light: #fef3c7;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--navy);
+            color: var(--white);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo-text { font-size: 1.25rem; font-weight: 600; }
+
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 6px;
+        }
+
+        .nav-link:hover { color: var(--white); background: rgba(255,255,255,0.1); }
+        .nav-link.active { color: var(--gold); }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+        .page-header {
+            text-align: center;
+            padding: 48px 24px 32px;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .page-header p { color: var(--gray-500); max-width: 600px; margin: 0 auto; }
+
+        .bill-section { margin-bottom: 40px; }
+
+        .bill-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .bill-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .bill-name {
+            font-size: 1rem;
+            color: var(--gray-500);
+            margin-left: 12px;
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: var(--green-light); color: #166534; }
+        .badge-warning { background: var(--amber-light); color: #92400e; }
+
+        .bill-content {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .bill-summary {
+            padding: 24px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .bill-summary p {
+            color: var(--gray-600);
+            margin-bottom: 12px;
+        }
+
+        .bill-summary p:last-child { margin-bottom: 0; }
+
+        .bill-details { padding: 20px 24px; }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.9rem;
+        }
+
+        .detail-row:last-child { border-bottom: none; }
+
+        .detail-label { color: var(--gray-500); }
+
+        .detail-value { font-weight: 500; }
+        .detail-value a { color: var(--navy); text-decoration: none; }
+        .detail-value a:hover { text-decoration: underline; }
+
+        .comparison-section { margin: 48px 0; }
+
+        .comparison-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th {
+            background: var(--navy);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .comparison-table td { color: var(--gray-600); }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table td:first-child { color: var(--gray-800); font-weight: 500; }
+
+        .timeline-section { margin: 48px 0; }
+
+        .timeline-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 28px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: var(--gray-200);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item:last-child { padding-bottom: 0; }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            background: var(--white);
+            border: 2px solid var(--green);
+            border-radius: 50%;
+        }
+
+        .timeline-item.pending::before { border-color: var(--amber); }
+
+        .timeline-date { font-size: 0.8rem; color: var(--gray-400); margin-bottom: 4px; }
+        .timeline-event { font-weight: 600; color: var(--navy); }
+        .timeline-desc { font-size: 0.85rem; color: var(--gray-500); }
+
+        .resources-section { margin: 48px 0 60px; }
+
+        .resources-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .resource-link:hover {
+            border-color: var(--navy);
+            background: var(--gray-50);
+        }
+
+        footer {
+            padding: 32px 24px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+
+        footer p { font-size: 0.85rem; color: var(--gray-500); }
+        footer a { color: var(--navy); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .bill-header { flex-direction: column; align-items: flex-start; }
+            .comparison-table { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚡</div>
+                <span class="logo-text">Nashville EV Connect</span>
+            </a>
+            <nav class="nav-links">
+                <a href="check.html" class="nav-link">Eligibility</a>
+                <a href="map.html" class="nav-link">Map</a>
+                <a href="contractors.html" class="nav-link">Contractors</a>
+                <a href="costs.html" class="nav-link">Costs</a>
+                <a href="legislation.html" class="nav-link active">Legislation</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <h1>EV Charging Legislation</h1>
+            <p>Nashville is building a two-track framework for EV charging: standalone facilities as a commercial use, and accessory stations supporting other uses.</p>
+        </section>
+
+        <section class="container">
+            <div class="bill-section">
+                <div class="bill-header">
+                    <div>
+                        <span class="bill-number">BL2025-958</span>
+                        <span class="bill-name">Electric Vehicle Charging Facility</span>
+                    </div>
+                    <span class="badge badge-success">✓ Passed Oct 21, 2025</span>
+                </div>
+                <div class="bill-content">
+                    <div class="bill-summary">
+                        <p><strong>Establishes EV charging as a principal commercial use.</strong> This covers standalone charging businesses—like a Tesla Supercharger plaza—where charging is the primary purpose.</p>
+                        <p>Permitted in commercial and industrial zones: CS, CA, CF, SCC, SCR, IWD, IR, IG. Allows 24/7 operation with screening requirements near residential.</p>
+                    </div>
+                    <div class="bill-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Sponsors</span>
+                            <span class="detail-value">CM Allen, CM Hancock</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Proposal #</span>
+                            <span class="detail-value">2025Z-008TX-001</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Legistar</span>
+                            <span class="detail-value"><a href="https://nashville.legistar.com/LegislationDetail.aspx?ID=7498969&GUID=D13488F5-8260-4831-B867-828D75562C1D" target="_blank">View Bill →</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bill-section">
+                <div class="bill-header">
+                    <div>
+                        <span class="bill-number">BL2025-1116</span>
+                        <span class="bill-name">Electric Vehicle Charging Station</span>
+                    </div>
+                    <span class="badge badge-warning">Pending Council Vote</span>
+                </div>
+                <div class="bill-content">
+                    <div class="bill-summary">
+                        <p><strong>Creates EV charging as an accessory utility use.</strong> This covers chargers supporting another primary use—like an office parking garage or apartment complex.</p>
+                        <p>Level 2 chargers permitted in all zones. DCFC permitted everywhere except single-family residential zones (AR2a, RS, R, RN, RL). Includes setback, screening, and hours restrictions.</p>
+                    </div>
+                    <div class="bill-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Sponsors</span>
+                            <span class="detail-value">CM Allen, CM Hancock</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Planning Commission</span>
+                            <span class="detail-value">Approved w/ substitute (Jan 8, 2026)</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Council Hearing</span>
+                            <span class="detail-value" style="color: var(--amber);">January 20, 2026</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Legistar</span>
+                            <span class="detail-value"><a href="https://nashville.legistar.com/LegislationDetail.aspx?ID=7717957&GUID=DBA9A9B2-3CA1-49E8-A122-1FFB77F4764D" target="_blank">View Bill →</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-section">
+                <h2 class="comparison-title">Facility vs. Station: What's the Difference?</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Facility (958)</th>
+                            <th>Station (1116)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Use Type</td><td>Principal commercial</td><td>Accessory utility</td></tr>
+                        <tr><td>Business Model</td><td>Charging IS the business</td><td>Charging supports another use</td></tr>
+                        <tr><td>Example</td><td>Tesla Supercharger</td><td>Office parking garage</td></tr>
+                        <tr><td>Zones</td><td>CS, CA, CF, SCC, SCR, IWD, IR, IG</td><td>Level 2: All; DCFC: Most</td></tr>
+                        <tr><td>Hours</td><td>24/7</td><td>DCFC in RM: 7am–11pm</td></tr>
+                        <tr><td>Status</td><td style="color: var(--green);">✓ Passed</td><td style="color: var(--amber);">Pending</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="timeline-section">
+                <h2 class="timeline-title">BL2025-1116 Timeline</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">October 28, 2025</div>
+                        <div class="timeline-event">Bill Filed</div>
+                        <div class="timeline-desc">Referred to Planning Commission</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">November 4, 2025</div>
+                        <div class="timeline-event">Passed First Reading</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">January 8, 2026</div>
+                        <div class="timeline-event">Planning Commission Approval</div>
+                        <div class="timeline-desc">Approved with substitute adding RN/RL districts</div>
+                    </div>
+                    <div class="timeline-item pending">
+                        <div class="timeline-date">January 20, 2026</div>
+                        <div class="timeline-event">Council Public Hearing</div>
+                        <div class="timeline-desc">Second reading and final vote expected</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="resources-section">
+                <h2 class="resources-title">Resources</h2>
+                <div class="resources-grid">
+                    <a href="https://nashville.legistar.com/Legislation.aspx" target="_blank" class="resource-link">📋 Legistar</a>
+                    <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT17ZO" target="_blank" class="resource-link">📖 Title 17 Zoning</a>
+                    <a href="https://www.nashville.gov/departments/planning/boards/planning-commission/meetings" target="_blank" class="resource-link">🏛️ Planning Commission</a>
+                    <a href="https://fox17.com/news/local/nashville-moves-closer-to-setting-rules-for-electric-vehicle-charging-stations" target="_blank" class="resource-link">📰 News Coverage</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Information current as of January 11, 2026. Check <a href="https://nashville.legistar.com" target="_blank">Legistar</a> for latest status.</p>
+        </div>
+    </footer>
+</body>
+</html>

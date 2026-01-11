@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoning Guide | Nashville EV Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #2c3e50;
+            --navy-dark: #1a252f;
+            --navy-light: #34495e;
+            --gold: #f1c40f;
+            --gold-light: #f9e79f;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --green: #22c55e;
+            --green-light: #dcfce7;
+            --amber: #f59e0b;
+            --amber-light: #fef3c7;
+            --red: #ef4444;
+            --red-light: #fee2e2;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--navy);
+            color: var(--white);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo-text { font-size: 1.25rem; font-weight: 600; }
+
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 6px;
+        }
+
+        .nav-link:hover { color: var(--white); background: rgba(255,255,255,0.1); }
+        .nav-link.active { color: var(--gold); }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+        .page-header {
+            text-align: center;
+            padding: 48px 24px 32px;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .page-header p { color: var(--gray-500); }
+
+        .section { margin-bottom: 48px; }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        /* Rules Cards */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 20px;
+        }
+
+        .rules-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .rules-card-header {
+            padding: 20px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .rules-card-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .rules-card-header p {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+        .rules-card-body { padding: 20px; }
+
+        .rule-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.9rem;
+        }
+
+        .rule-row:last-child { border-bottom: none; }
+
+        .rule-label { color: var(--gray-500); }
+
+        .rule-value { font-weight: 500; text-align: right; max-width: 55%; }
+
+        .rule-value.yes { color: var(--green); }
+        .rule-value.no { color: var(--red); }
+        .rule-value.restricted { color: var(--amber); }
+
+        /* Definitions */
+        .definition-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .definition-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .definition-card p {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+        }
+
+        .definition-card .ref {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+
+        .definition-card .ref a {
+            color: var(--navy);
+            text-decoration: none;
+        }
+
+        /* Resources */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .resource-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .resource-card:hover {
+            border-color: var(--navy);
+            background: var(--gray-50);
+        }
+
+        .resource-icon { font-size: 1.25rem; }
+
+        /* Info boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-box.note {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+        }
+
+        .info-box.warning {
+            background: var(--amber-light);
+            border: 1px solid #fcd34d;
+        }
+
+        .info-box h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        footer {
+            padding: 32px 24px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+            margin-top: 48px;
+        }
+
+        footer p { font-size: 0.85rem; color: var(--gray-500); }
+        footer a { color: var(--navy); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .rules-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚡</div>
+                <span class="logo-text">Nashville EV Connect</span>
+            </a>
+            <nav class="nav-links">
+                <a href="check.html" class="nav-link">Eligibility</a>
+                <a href="map.html" class="nav-link">Map</a>
+                <a href="contractors.html" class="nav-link">Contractors</a>
+                <a href="costs.html" class="nav-link">Costs</a>
+                <a href="legislation.html" class="nav-link">Legislation</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <h1>EV Charging Zoning Guide</h1>
+            <p>Complete breakdown of Level 2 vs DCFC rules under Nashville's new zoning framework</p>
+        </section>
+
+        <section class="container">
+            <div class="info-box warning">
+                <h4>⚠️ Legislation Pending</h4>
+                <p>BL2025-1116 (accessory charging stations) passed Planning Commission on January 8, 2026 with a substitute ordinance. Council public hearing scheduled for January 20, 2026. Rules below reflect the substitute version.</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Zoning Rules by Charger Type</h2>
+                <div class="rules-grid">
+                    <div class="rules-card">
+                        <div class="rules-card-header">
+                            <h3>⚡ Level 2 EVSE</h3>
+                            <p>3 kW – 22 kW • AC charging • Typical home/workplace charger</p>
+                        </div>
+                        <div class="rules-card-body">
+                            <div class="rule-row">
+                                <span class="rule-label">Permitted Zones</span>
+                                <span class="rule-value yes">All zoning districts</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">Location</span>
+                                <span class="rule-value">Anywhere parking is permitted</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">Parking Credit</span>
+                                <span class="rule-value yes">Yes, counts toward minimums</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">Canopy Height</span>
+                                <span class="rule-value">16 ft maximum</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">Setback</span>
+                                <span class="rule-value">None required</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">Hours Restriction</span>
+                                <span class="rule-value">None</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rules-card">
+                        <div class="rules-card-header">
+                            <h3>🔋 DCFC (Fast Charging)</h3>
+                            <p>50 kW+ • DC charging • Commercial fast chargers</p>
+                        </div>
+                        <div class="rules-card-body">
+                            <div class="rule-row">
+                                <span class="rule-label">Excluded Zones</span>
+                                <span class="rule-value no">AR2a, RS, R, RN, RL districts</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">Setback</span>
+                                <span class="rule-value">20 ft from residential property</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">Parking Credit</span>
+                                <span class="rule-value no">No, does not count</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">RM Districts</span>
+                                <span class="rule-value restricted">Residents/guests only, 7am-11pm</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">Screening</span>
+                                <span class="rule-value">C-5 buffer within 100ft of AR2a/RS/R/RM</span>
+                            </div>
+                            <div class="rule-row">
+                                <span class="rule-label">Waiver</span>
+                                <span class="rule-value">Zoning Administrator may waive screening</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Code Definitions</h2>
+                
+                <div class="definition-card">
+                    <h3>Electric Vehicle Charging Station</h3>
+                    <p>Equipment that is connected to the electrical grid or on-site power generation and is designed to charge electric vehicles. Classified as a <strong>utility accessory use</strong> under the zoning code.</p>
+                    <span class="ref">Source: <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT17ZO_CH17.04GEPRDE" target="_blank">§ 17.04.060</a> (proposed)</span>
+                </div>
+
+                <div class="definition-card">
+                    <h3>Electric Vehicle Charging Facility</h3>
+                    <p>A <strong>principal commercial use</strong> where EV charging is the primary purpose of the site. Includes standalone charging plazas and depots.</p>
+                    <span class="ref">Source: <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT17ZO_CH17.04GEPRDE" target="_blank">§ 17.04.060</a></span>
+                </div>
+
+                <div class="definition-card">
+                    <h3>Level 2 EVSE</h3>
+                    <p>Electric vehicle charging equipment with an output between 3 kW and 22 kW using alternating current (AC).</p>
+                    <span class="ref">Source: BL2025-1116 substitute ordinance</span>
+                </div>
+
+                <div class="definition-card">
+                    <h3>DCFC (Direct Current Fast Charger)</h3>
+                    <p>Electric vehicle charging equipment with a capacity of 50 kW or more using direct current (DC).</p>
+                    <span class="ref">Source: BL2025-1116 substitute ordinance</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Resources</h2>
+                <div class="resources-grid">
+                    <a href="https://nashville.legistar.com/LegislationDetail.aspx?ID=7498969&GUID=D13488F5-8260-4831-B867-828D75562C1D" target="_blank" class="resource-card">
+                        <span class="resource-icon">📋</span>
+                        <span>BL2025-958 (Facility)</span>
+                    </a>
+                    <a href="https://nashville.legistar.com/LegislationDetail.aspx?ID=7717957&GUID=DBA9A9B2-3CA1-49E8-A122-1FFB77F4764D" target="_blank" class="resource-card">
+                        <span class="resource-icon">📋</span>
+                        <span>BL2025-1116 (Station)</span>
+                    </a>
+                    <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT17ZO" target="_blank" class="resource-card">
+                        <span class="resource-icon">📖</span>
+                        <span>Title 17 Zoning Code</span>
+                    </a>
+                    <a href="https://www.nashville.gov/departments/planning/boards/planning-commission/meetings/planning-commission-meeting-january-8-2026" target="_blank" class="resource-card">
+                        <span class="resource-icon">🏛️</span>
+                        <span>Jan 8 PC Meeting</span>
+                    </a>
+                    <a href="https://data.nashville.gov/datasets/trade-permits/explore" target="_blank" class="resource-card">
+                        <span class="resource-icon">📊</span>
+                        <span>Trade Permits Data</span>
+                    </a>
+                    <a href="https://experience.arcgis.com/experience/cb6cffa43fe34a90a2c8b79d11eaff76" target="_blank" class="resource-card">
+                        <span class="resource-icon">🗺️</span>
+                        <span>Metro Charging Stations</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Last updated: January 11, 2026 • <a href="legislation.html">View full legislation details</a></p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Eligibility | Nashville EV Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #2c3e50;
+            --navy-dark: #1a252f;
+            --navy-light: #34495e;
+            --gold: #f1c40f;
+            --gold-light: #f9e79f;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --green: #22c55e;
+            --green-light: #dcfce7;
+            --amber: #f59e0b;
+            --amber-light: #fef3c7;
+            --red: #ef4444;
+            --red-light: #fee2e2;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--navy);
+            color: var(--white);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--white);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link.active {
+            color: var(--gold);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 48px 24px 32px;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--gray-500);
+        }
+
+        .search-section {
+            padding: 0 0 48px;
+        }
+
+        .search-box {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            color: var(--gray-800);
+            font-size: 1rem;
+            font-family: var(--font);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--navy);
+        }
+
+        .search-btn {
+            padding: 14px 28px;
+            background: var(--navy);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-btn:hover {
+            background: var(--navy-dark);
+        }
+
+        .search-hint {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            text-align: center;
+        }
+
+        .results-section {
+            padding: 0 0 60px;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .result-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .result-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .result-address {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+
+        .result-meta strong {
+            color: var(--gray-700);
+        }
+
+        .result-body {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .charger-result {
+            padding: 24px;
+        }
+
+        .charger-result:first-child {
+            border-right: 1px solid var(--gray-200);
+        }
+
+        .charger-type {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .charger-icon {
+            font-size: 1.75rem;
+        }
+
+        .charger-name {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .charger-spec {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .status-row.allowed {
+            background: var(--green-light);
+        }
+
+        .status-row.restricted {
+            background: var(--amber-light);
+        }
+
+        .status-row.excluded {
+            background: var(--red-light);
+        }
+
+        .status-text {
+            font-weight: 600;
+        }
+
+        .status-row.allowed .status-text { color: #166534; }
+        .status-row.restricted .status-text { color: #92400e; }
+        .status-row.excluded .status-text { color: #991b1b; }
+
+        .rules-list {
+            list-style: none;
+        }
+
+        .rules-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .rules-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rule-label {
+            color: var(--gray-500);
+        }
+
+        .rule-value {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        footer {
+            padding: 32px 24px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+
+        footer p {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+        footer a {
+            color: var(--navy);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .search-input-wrapper { flex-direction: column; }
+            .charger-result:first-child { border-right: none; border-bottom: 1px solid var(--gray-200); }
+            .result-body { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚡</div>
+                <span class="logo-text">Nashville EV Connect</span>
+            </a>
+            <nav class="nav-links">
+                <a href="check.html" class="nav-link active">Eligibility</a>
+                <a href="map.html" class="nav-link">Map</a>
+                <a href="contractors.html" class="nav-link">Contractors</a>
+                <a href="costs.html" class="nav-link">Costs</a>
+                <a href="legislation.html" class="nav-link">Legislation</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Check EV Charger Eligibility</h1>
+                <p>Enter a Nashville address to see what types of EV chargers are allowed and what rules apply.</p>
+            </div>
+        </section>
+
+        <section class="search-section">
+            <div class="container">
+                <div class="search-box">
+                    <div class="search-input-wrapper">
+                        <input type="text" class="search-input" id="addressInput" placeholder="Enter address (e.g., 123 Main St, Nashville)">
+                        <button class="search-btn" onclick="checkEligibility()">Check</button>
+                    </div>
+                    <p class="search-hint">We'll look up the zoning district and show you what's permitted</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section" id="resultsSection">
+            <div class="container">
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-address" id="resultAddress">123 Broadway, Nashville TN 37203</div>
+                        <div class="result-meta">
+                            <span>Parcel: <strong id="resultParcel">092-16-0-E-019.00</strong></span>
+                            <span>Zoning: <strong id="resultZoning">MUL-A</strong></span>
+                        </div>
+                    </div>
+                    <div class="result-body">
+                        <div class="charger-result">
+                            <div class="charger-type">
+                                <span class="charger-icon">⚡</span>
+                                <div>
+                                    <div class="charger-name">Level 2 EVSE</div>
+                                    <div class="charger-spec">3kW – 22kW • AC</div>
+                                </div>
+                            </div>
+                            <div class="status-row allowed" id="level2Status">
+                                <span class="status-text">✓ PERMITTED</span>
+                            </div>
+                            <ul class="rules-list">
+                                <li>
+                                    <span class="rule-label">Location</span>
+                                    <span class="rule-value">Anywhere parking permitted</span>
+                                </li>
+                                <li>
+                                    <span class="rule-label">Parking Credit</span>
+                                    <span class="rule-value" style="color: var(--green);">Yes</span>
+                                </li>
+                                <li>
+                                    <span class="rule-label">Canopy Height</span>
+                                    <span class="rule-value">16 ft max</span>
+                                </li>
+                                <li>
+                                    <span class="rule-label">Setback</span>
+                                    <span class="rule-value">None required</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="charger-result">
+                            <div class="charger-type">
+                                <span class="charger-icon">🔋</span>
+                                <div>
+                                    <div class="charger-name">DCFC (Fast Charging)</div>
+                                    <div class="charger-spec">50kW+ • DC</div>
+                                </div>
+                            </div>
+                            <div class="status-row allowed" id="dcfcStatus">
+                                <span class="status-text">✓ PERMITTED</span>
+                            </div>
+                            <ul class="rules-list" id="dcfcRules">
+                                <li>
+                                    <span class="rule-label">Setback from Residential</span>
+                                    <span class="rule-value">20 ft minimum</span>
+                                </li>
+                                <li>
+                                    <span class="rule-label">Parking Credit</span>
+                                    <span class="rule-value" style="color: var(--red);">No</span>
+                                </li>
+                                <li>
+                                    <span class="rule-label">Hours Restriction</span>
+                                    <span class="rule-value" id="dcfcHours">None</span>
+                                </li>
+                                <li>
+                                    <span class="rule-label">Screening (within 100ft res.)</span>
+                                    <span class="rule-value">C-5 buffer</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Zoning rules based on <a href="https://nashville.legistar.com/LegislationDetail.aspx?ID=7717957" target="_blank">BL2025-1116</a> (pending Council vote Jan 20, 2026).</p>
+        </div>
+    </footer>
+
+    <script>
+        const DCFC_EXCLUDED = ['AR2a', 'RS', 'RS3.75', 'RS5', 'RS7.5', 'RS10', 'RS15', 'RS20', 'RS40', 'RS80', 'R', 'R6', 'R6-A', 'R8', 'R8-A', 'R10', 'R15', 'R20', 'R30', 'R40', 'R80', 'RN1', 'RN2', 'RL1', 'RL2', 'RL3'];
+        const RM_DISTRICTS = ['RM2', 'RM4', 'RM6', 'RM9', 'RM15', 'RM20', 'RM40', 'RM60', 'RM80', 'RM100'];
+
+        function checkEligibility() {
+            const address = document.getElementById('addressInput').value;
+            if (!address) return;
+
+            document.getElementById('resultsSection').classList.add('show');
+            document.getElementById('resultAddress').textContent = address;
+            simulateResults(address);
+        }
+
+        function simulateResults(address) {
+            const demoZones = ['MUL-A', 'CS', 'RS10', 'RM20', 'CN', 'IWD'];
+            const zone = demoZones[Math.floor(Math.random() * demoZones.length)];
+            
+            document.getElementById('resultZoning').textContent = zone;
+            document.getElementById('resultParcel').textContent = '092-' + Math.floor(Math.random() * 99) + '-0-E-0' + Math.floor(Math.random() * 99) + '.00';
+
+            const dcfcExcluded = DCFC_EXCLUDED.some(d => zone.startsWith(d.replace('-A', '')));
+            const isRM = RM_DISTRICTS.some(d => zone.startsWith(d));
+
+            const dcfcStatusEl = document.getElementById('dcfcStatus');
+            const dcfcHoursEl = document.getElementById('dcfcHours');
+
+            if (dcfcExcluded) {
+                dcfcStatusEl.className = 'status-row excluded';
+                dcfcStatusEl.innerHTML = '<span class="status-text">✗ NOT PERMITTED</span>';
+                dcfcHoursEl.textContent = 'N/A';
+            } else if (isRM) {
+                dcfcStatusEl.className = 'status-row restricted';
+                dcfcStatusEl.innerHTML = '<span class="status-text">⚠ RESTRICTED</span>';
+                dcfcHoursEl.textContent = '7am – 11pm only';
+                dcfcHoursEl.style.color = 'var(--amber)';
+            } else {
+                dcfcStatusEl.className = 'status-row allowed';
+                dcfcStatusEl.innerHTML = '<span class="status-text">✓ PERMITTED</span>';
+                dcfcHoursEl.textContent = 'None';
+                dcfcHoursEl.style.color = 'inherit';
+            }
+        }
+
+        document.getElementById('addressInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkEligibility();
+        });
+    </script>
+</body>
+</html>
