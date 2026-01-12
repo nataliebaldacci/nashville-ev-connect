@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utility Planning Guide for EV Installation | Nashville EV Connect</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: #f5f5f0;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3d5a6e 100%);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: #f1c40f;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .logo-text {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        .logo-sub {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+        }
+        .nav-tab {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .nav-tab.active {
+            background: #f1c40f;
+            color: #2c3e50;
+            border-color: #f1c40f;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            right: -50px;
+            top: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(241, 196, 15, 0.1);
+            border-radius: 50%;
+        }
+        .hero h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        .hero p {
+            font-size: 16px;
+            opacity: 0.9;
+            max-width: 700px;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .toc h3 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+        .toc-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .toc-item:hover {
+            background: #e8f4f8;
+            border-color: #6b8fa3;
+        }
+        .toc-item .num {
+            display: block;
+            font-size: 20px;
+            font-weight: 700;
+            color: #6b8fa3;
+            margin-bottom: 6px;
+        }
+        
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .quick-stat {
+            background: white;
+            padding: 24px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #6b8fa3;
+        }
+        .quick-stat:nth-child(2) { border-left-color: #6b8e4e; }
+        .quick-stat:nth-child(3) { border-left-color: #f1c40f; }
+        .quick-stat:nth-child(4) { border-left-color: #e74c3c; }
+        .quick-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .quick-stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+        
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .section-header {
+            background: #2c3e50;
+            color: white;
+            padding: 16px 24px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-header .icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .section-content {
+            padding: 24px;
+        }
+        
+        /* Two Column Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        /* Decision Matrix */
+        .decision-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .decision-card {
+            padding: 24px;
+            border-radius: 10px;
+            border: 2px solid;
+        }
+        .decision-card.required {
+            border-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        .decision-card.not-required {
+            border-color: #27ae60;
+            background: #f0fdf4;
+        }
+        .decision-card h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .decision-card.required h3 { color: #c0392b; }
+        .decision-card.not-required h3 { color: #1e8449; }
+        .decision-card ul {
+            margin-left: 20px;
+        }
+        .decision-card li {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .decision-card li strong {
+            color: #2c3e50;
+        }
+        
+        /* NES Requirements Table */
+        .nes-req-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+        .nes-req-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .nes-req-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e8e8e8;
+            vertical-align: top;
+        }
+        .nes-req-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .nes-req-table tr:hover {
+            background: #e8f4f8;
+        }
+        .charger-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .charger-badge.level1 { background: #d4edda; color: #155724; }
+        .charger-badge.level2 { background: #fff3cd; color: #856404; }
+        .charger-badge.dcfc { background: #f8d7da; color: #721c24; }
+        
+        /* Steps */
+        .steps-container {
+            counter-reset: step-counter;
+        }
+        .step {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .step-content h4 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .step-content p {
+            font-size: 14px;
+            color: #555;
+        }
+        .step-content ul {
+            margin-top: 10px;
+            margin-left: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+        .step-content li {
+            margin-bottom: 6px;
+        }
+        
+        /* Code Reference Box */
+        .code-ref {
+            background: #f0f4f8;
+            border: 1px solid #d0d7de;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .code-ref-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .code-ref-content {
+            font-size: 13px;
+            color: #555;
+        }
+        .code-ref-content a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .code-ref-content a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Rates Table */
+        .rates-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .rates-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .rates-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .rates-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .rates-table tr:hover {
+            background: #e8f4f8;
+        }
+        
+        /* Permit Fees Table */
+        .fees-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .fees-table th {
+            background: #6b8e4e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .fees-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .fees-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        /* Calculator Tools */
+        .calc-tools {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .calc-tool-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .calc-tool-card:hover {
+            border-color: #6b8fa3;
+            background: #e8f4f8;
+        }
+        .calc-tool-card .icon {
+            width: 60px;
+            height: 60px;
+            background: #2c3e50;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+        }
+        .calc-tool-card h4 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .calc-tool-card p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+        .calc-tool-card a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #6b8fa3;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .calc-tool-card a:hover {
+            background: #5a7d91;
+        }
+        
+        /* Load Calculator */
+        .calculator {
+            background: #f8f9fa;
+            padding: 24px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        .calc-section {
+            margin-bottom: 20px;
+        }
+        .calc-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #6b8fa3;
+        }
+        .calc-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .calc-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .calc-label {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        .calc-input {
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 100px;
+            text-align: right;
+        }
+        .calc-unit {
+            font-size: 13px;
+            color: #666;
+            width: 60px;
+        }
+        .calc-results {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .calc-result {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .calc-result.warning {
+            background: #e74c3c;
+        }
+        .calc-result.success {
+            background: #27ae60;
+        }
+        .calc-result-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+        .calc-result-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        /* Map Section */
+        #map {
+            height: 400px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        .map-legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .legend-dot.done { background: #27ae60; }
+        .legend-dot.issued { background: #f1c40f; }
+        .legend-dot.cancelled { background: #e74c3c; }
+        
+        /* Permit Stats */
+        .permit-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .permit-stat {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .permit-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .permit-stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Resources */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2c3e50;
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
+        }
+        .resource-link:hover {
+            background: #e8f4f8;
+            border-color: #6b8fa3;
+        }
+        .resource-link .icon {
+            width: 40px;
+            height: 40px;
+            background: #6b8fa3;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .resource-link .icon.green { background: #6b8e4e; }
+        .resource-link .icon.yellow { background: #f1c40f; color: #2c3e50; }
+        .resource-link .icon.navy { background: #2c3e50; }
+        .resource-link span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .resource-link small {
+            display: block;
+            font-size: 11px;
+            color: #888;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+        .ext-link::after {
+            content: ' ↗';
+            font-size: 11px;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #6b8fa3;
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+        }
+        .info-box.warning {
+            background: #fef3e2;
+            border-left-color: #f1c40f;
+        }
+        .info-box.important {
+            background: #fdf2f2;
+            border-left-color: #e74c3c;
+        }
+        .info-box.success {
+            background: #e8f5e8;
+            border-left-color: #27ae60;
+        }
+        .info-box h4 {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #2c3e50;
+        }
+        .info-box p {
+            font-size: 13px;
+            color: #555;
+        }
+        .info-box a {
+            color: #2980b9;
+        }
+        
+        /* Accordion */
+        .accordion-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .accordion-header {
+            padding: 16px 20px;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .accordion-header:hover {
+            background: #e8e8e8;
+        }
+        .accordion-content {
+            padding: 20px;
+            display: none;
+            border-top: 1px solid #e0e0e0;
+        }
+        .accordion-content.active {
+            display: block;
+        }
+        
+        /* Contact Cards */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .contact-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        .contact-card h4 {
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        .contact-card p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .contact-card a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .contact-card a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .footer p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        .footer a {
+            color: #f1c40f;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .toc-grid { grid-template-columns: repeat(3, 1fr); }
+            .calc-tools { grid-template-columns: repeat(2, 1fr); }
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .quick-stats { grid-template-columns: repeat(2, 1fr); }
+            .decision-grid { grid-template-columns: 1fr; }
+            .two-col { grid-template-columns: 1fr; }
+            .resources-grid { grid-template-columns: 1fr; }
+            .toc-grid { grid-template-columns: repeat(2, 1fr); }
+            .calc-tools { grid-template-columns: 1fr; }
+            .calc-results { grid-template-columns: 1fr; }
+            .permit-stats { grid-template-columns: repeat(2, 1fr); }
+            .nav-tabs { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">⚡</div>
+            <div>
+                <div class="logo-text">Nashville EV Connect</div>
+                <div class="logo-sub">Utility Planning Guide</div>
+            </div>
+        </div>
+        <nav class="nav-tabs">
+            <a href="#" class="nav-tab">Map</a>
+            <a href="#" class="nav-tab">Legislation</a>
+            <a href="#" class="nav-tab">Contractors</a>
+            <a href="#" class="nav-tab active">Utility Planning</a>
+            <a href="#" class="nav-tab">Costs</a>
+        </nav>
+    </header>
+    
+    <main class="main-content">
+        <!-- Hero -->
+        <section class="hero">
+            <h1>⚡ Utility Planning Guide for EV Installation</h1>
+            <p>A comprehensive guide to navigating electrical capacity assessments, NES requirements, Metro permits, and utility coordination for EV charging installations in Nashville-Davidson County.</p>
+        </section>
+        
+        <!-- Table of Contents -->
+        <nav class="toc">
+            <h3>📋 Quick Navigation</h3>
+            <div class="toc-grid">
+                <a href="#planning" class="toc-item">
+                    <span class="num">1</span>
+                    Planning for EV Installation
+                </a>
+                <a href="#capacity" class="toc-item">
+                    <span class="num">2</span>
+                    Electrical Capacity & Upgrades
+                </a>
+                <a href="#nes" class="toc-item">
+                    <span class="num">3</span>
+                    NES Involvement & Requirements
+                </a>
+                <a href="#permits" class="toc-item">
+                    <span class="num">4</span>
+                    Metro Codes & Permits
+                </a>
+                <a href="#tools" class="toc-item">
+                    <span class="num">5</span>
+                    Calculators & Tools
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Quick Stats -->
+        <section class="quick-stats">
+            <div class="quick-stat">
+                <div class="quick-stat-value">70</div>
+                <div class="quick-stat-label">EV Service Releases</div>
+            </div>
+            <div class="quick-stat">
+                <div class="quick-stat-value">200A</div>
+                <div class="quick-stat-label">Typical Upgrade Threshold</div>
+            </div>
+            <div class="quick-stat">
+                <div class="quick-stat-value">$75</div>
+                <div class="quick-stat-label">Minimum Electrical Permit</div>
+            </div>
+            <div class="quick-stat">
+                <div class="quick-stat-value">30-60</div>
+                <div class="quick-stat-label">Days Advance Notice to NES</div>
+            </div>
+        </section>
+        
+        <!-- Section 1: Planning for EV Installation -->
+        <section id="planning" class="section">
+            <div class="section-header">
+                <div class="icon">📍</div>
+                1. Planning for EV Installation
+            </div>
+            <div class="section-content">
+                <p style="margin-bottom: 20px;">Before installing EV charging infrastructure, property owners must assess their electrical system, choose appropriate charging equipment, and understand the utility and permitting requirements. The complexity of your project depends on the charger type and your existing electrical capacity.</p>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 24px 0 16px;">Charger Types & NES Requirements</h3>
+                <p style="margin-bottom: 16px;">Different charger types have varying electrical requirements and NES involvement levels:</p>
+                
+                <table class="nes-req-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%;">Charger Type</th>
+                            <th style="width: 18%;">NES Release/Approval</th>
+                            <th style="width: 18%;">Plans & Documents</th>
+                            <th style="width: 15%;">Potential NES Impacts</th>
+                            <th style="width: 15%;">Timeline</th>
+                            <th style="width: 12%;">Budget</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="charger-badge level1">Level 1</span><br><small>120V, 1.4-1.9kW</small></td>
+                            <td>Codes release may not be required if existing infrastructure is sufficient; check with NES for confirmation.</td>
+                            <td>Verify existing electrical capacity; minimal documentation needed.</td>
+                            <td>Minimal - can often use existing infrastructure.</td>
+                            <td><strong>Short</strong><br>(weeks)</td>
+                            <td><strong>Low</strong><br>$300-$1,000</td>
+                        </tr>
+                        <tr>
+                            <td><span class="charger-badge level2">Level 2</span><br><small>240V, 7.2-19.2kW</small></td>
+                            <td>Requires electrical release for panel upgrades; plans for new meter or minor upgrades must be submitted.</td>
+                            <td>Electrical load calculations, panel capacity assessment, site plans if new infrastructure added.</td>
+                            <td>Moderate - may require new meter or panel upgrade.</td>
+                            <td><strong>Moderate</strong><br>(1-3 months)</td>
+                            <td><strong>Medium</strong><br>$1,500-$5,000</td>
+                        </tr>
+                        <tr>
+                            <td><span class="charger-badge dcfc">DC Fast</span><br><small>400-900V, 50-350kW</small></td>
+                            <td>Mandatory Codes release and NES approval for transformer upgrades; site plans and electrical one-line diagrams required.</td>
+                            <td>Detailed site plan, one-line diagram, load calculations, transformer specifications (consider "Bring Your Own Transformer" policy).</td>
+                            <td>Significant - likely requires new transformer or major upgrade.</td>
+                            <td><strong>Long</strong><br>(6-18 months)</td>
+                            <td><strong>High</strong><br>$50,000+</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="info-box warning" style="margin-top: 24px;">
+                    <h4>⚠️ Supply Chain Considerations</h4>
+                    <p>Due to ongoing supply chain issues, transformers, poles, and meters may have 12-18 month lead times. NES reported approximately $80M in backorders as of 2024. Plan early and engage NES at least 30 days (residential) or 60 days (commercial) in advance.</p>
+                </div>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 24px 0 16px;">Key Planning Steps</h3>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Assess Current Electrical System</h4>
+                            <p>Determine your building's existing electrical capacity and configuration:</p>
+                            <ul>
+                                <li><strong>Service Type:</strong> Single-phase (typical residential) or three-phase (commercial/multifamily)</li>
+                                <li><strong>Panel Capacity:</strong> Check amperage rating (e.g., 200A, 400A) and available spare capacity</li>
+                                <li><strong>Distance to Parking:</strong> Assess distance from panel to proposed charger location for conduit/wiring costs</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Choose Charging Equipment</h4>
+                            <p>Select chargers based on your needs and electrical capacity:</p>
+                            <ul>
+                                <li><strong>Individual Use:</strong> Level 1 or Level 2 directly connected to resident's panel</li>
+                                <li><strong>Shared Use:</strong> Level 2 with Energy Management System (EVEMS) to optimize power distribution</li>
+                                <li><strong>Commercial/Fleet:</strong> Consider DC Fast Charging or multiple managed Level 2 stations</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Contact Key Stakeholders Early</h4>
+                            <p>Engage utility and contractors before starting work:</p>
+                            <ul>
+                                <li><strong>NES Energy Services:</strong> <a href="tel:615-747-3775">615-747-3775</a> or <a href="mailto:EnergyServices@NESPower.com">EnergyServices@NESPower.com</a></li>
+                                <li><strong>Licensed Electrical Contractor:</strong> Familiar with NES meter base specifications and trenching guidelines</li>
+                                <li><strong>Property Stakeholders:</strong> For HOAs/condos, consult residents and board to gauge interest</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 2: Electrical Capacity & Utility Upgrades -->
+        <section id="capacity" class="section">
+            <div class="section-header">
+                <div class="icon">🔌</div>
+                2. Electrical Capacity & Utility Upgrades
+            </div>
+            <div class="section-content">
+                <p style="margin-bottom: 20px;">Understanding your electrical capacity is critical before adding EV chargers. Many installations require panel upgrades or new service connections, especially for Level 2 and DC Fast Charging.</p>
+                
+                <div class="two-col">
+                    <div>
+                        <h3 style="font-size: 16px; color: #2c3e50; margin-bottom: 16px;">Capacity Assessment Checklist</h3>
+                        <ul style="margin-left: 20px; font-size: 14px; color: #555;">
+                            <li style="margin-bottom: 10px;"><strong>Main Service Panel Capacity:</strong> Check total amperage rating and compare to current load</li>
+                            <li style="margin-bottom: 10px;"><strong>Load Study:</strong> Hire a licensed electrician to calculate existing usage vs. available capacity</li>
+                            <li style="margin-bottom: 10px;"><strong>Peak Demand:</strong> Review utility bills to identify peak usage periods</li>
+                            <li style="margin-bottom: 10px;"><strong>Subpanels:</strong> Check if dedicated subpanels exist for garage/parking areas</li>
+                            <li style="margin-bottom: 10px;"><strong>Spare Breaker Slots:</strong> Verify available circuit breaker positions</li>
+                            <li style="margin-bottom: 10px;"><strong>Transformer Capacity:</strong> Contact NES to verify transformer can handle additional load</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 16px; color: #2c3e50; margin-bottom: 16px;">When Upgrades Are Needed</h3>
+                        <div class="info-box">
+                            <h4>Panel Upgrades</h4>
+                            <p>If your main service or subpanels are near capacity, you may need to install additional panels or upgrade existing ones. NES involvement is required when upgrading from 200A to 400A or higher.</p>
+                        </div>
+                        <div class="info-box warning">
+                            <h4>Transformer Upgrades</h4>
+                            <p>If the transformer serving your property is maxed out, NES may need to upgrade it. This typically requires a Contribution in Aid of Construction (CIAC) fee and can take 6-18 months.</p>
+                        </div>
+                        <div class="info-box success">
+                            <h4>Load Management Alternative</h4>
+                            <p>Smart chargers or Energy Management Systems (EVEMS) can reduce required capacity by 30-50%, potentially avoiding costly infrastructure upgrades.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="code-ref" style="margin-top: 24px;">
+                    <div class="code-ref-title">📖 NES Electric Service Guidelines Reference</div>
+                    <div class="code-ref-content">
+                        <p><strong>Table 1 - Service Ratings:</strong> Standard residential service up to 167 kVA single-phase. Three-phase service available for commercial applications. See <a href="https://www.nespower.com/-/media/project/nes/common/pdfs/builders-and-developers/electric-service-guidelines-v20.pdf" target="_blank" class="ext-link">Electric Service Guidelines v20</a> for complete specifications.</p>
+                    </div>
+                </div>
+                
+                <div class="info-box important" style="margin-top: 20px;">
+                    <h4>🏢 Multifamily = Commercial Classification</h4>
+                    <p>Under NES guidelines, all multi-unit dwellings are treated as <strong>commercial</strong> service, regardless of zoning or billing classification. Three-phase service is also considered commercial even when installed on residential property. This affects rates, metering requirements, and service classifications. See <a href="https://www.nespower.com/-/media/project/nes/common/pdfs/builders-and-developers/electric-service-guidelines-v20.pdf" target="_blank">NES Electric Service Guidelines Chapter III</a>.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 3: NES Involvement and Requirements -->
+        <section id="nes" class="section">
+            <div class="section-header">
+                <div class="icon">⚡</div>
+                3. NES Involvement & Requirements
+            </div>
+            <div class="section-content">
+                <p style="margin-bottom: 20px;">Nashville Electric Service (NES) must be involved (or at least consulted) for most EV charging installations that impact the building's electrical service. Here's a comprehensive guide to when NES involvement is required.</p>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin-bottom: 16px;">Decision Matrix: When is NES Required?</h3>
+                <div class="decision-grid">
+                    <div class="decision-card required">
+                        <h3>🔴 NES IS Required</h3>
+                        <ul>
+                            <li><strong>New or Upgraded Service:</strong> Upgrading from 200A to 400A or higher, or installing a dedicated meter for EV charging</li>
+                            <li><strong>New Transformer:</strong> Installing DC Fast Chargers (50kW+) or multiple chargers requiring larger transformer capacity</li>
+                            <li><strong>New Metered Account:</strong> Adding a separate meter for EV charging (public, pay-per-use, or common area)</li>
+                            <li><strong>Distribution Changes:</strong> Relocating overhead lines, burying cables, or modifying NES-owned equipment</li>
+                            <li><strong>CT Metering:</strong> Any service above 200A requiring current transformers</li>
+                            <li><strong>Solar/Battery Export:</strong> Systems that can export power back to the NES grid require interconnection approval</li>
+                            <li><strong>Replacing Conductors:</strong> Replacing any customer-owned conductor (even with same amperage)</li>
+                            <li><strong>Adding Load:</strong> Changing panel size to accommodate additional electrical load</li>
+                        </ul>
+                    </div>
+                    <div class="decision-card not-required">
+                        <h3>🟢 NES NOT Required</h3>
+                        <ul>
+                            <li><strong>Small Addition:</strong> Adding a Level 2 (30-40A) charger to existing 200A panel with adequate spare capacity</li>
+                            <li><strong>Subpanel Only:</strong> Adding a subpanel for EV charging without upsizing main service</li>
+                            <li><strong>Same-Rating Replacement:</strong> Swapping a broken 40A charger with a new 40A unit on the same circuit</li>
+                            <li><strong>Off-Grid Backup:</strong> Installing an open-transition generator that never parallels with NES</li>
+                            <li><strong>Replacing Meter Blocks:</strong> Simple meter block replacement without conductor changes</li>
+                            <li><strong>Same Amperage Base:</strong> Replacing meter base with same amperage and NO wire replacement</li>
+                            <li><strong>Conduit/Weather-head:</strong> Replacing or reattaching conduit, changing out weather-head or hub</li>
+                            <li><strong>Breaker Replacement:</strong> Replacing breakers within existing panel capacity</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 30px 0 16px;">NES Release Types</h3>
+                <div class="two-col">
+                    <div class="info-box">
+                        <h4>Electric Release Required When:</h4>
+                        <ul style="margin-left: 20px; font-size: 13px; margin-top: 8px;">
+                            <li>Installing a new service</li>
+                            <li>Replacing conductor with new conductor</li>
+                            <li>Adding additional load (changing panel size)</li>
+                            <li>Relocating a service or building new service</li>
+                            <li>Service has been de-energized over one year</li>
+                        </ul>
+                    </div>
+                    <div class="info-box warning">
+                        <h4>Change Meter Order Required When:</h4>
+                        <ul style="margin-left: 20px; font-size: 13px; margin-top: 8px;">
+                            <li>Adding additional load (changing panel size)</li>
+                            <li>Relocating a service</li>
+                            <li>Replacing an existing service</li>
+                            <li>Replacing conductor with new conductor</li>
+                            <li>Whenever an Electrical Release is required</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="code-ref" style="margin-top: 24px;">
+                    <div class="code-ref-title">📖 NES Policy References</div>
+                    <div class="code-ref-content">
+                        <ul style="margin-left: 20px; font-size: 13px;">
+                            <li><a href="https://www.nespower.com/-/media/project/nes/common/pdfs/policies/electricservicepolicies11-18.pdf" target="_blank" class="ext-link">NES Electric Service Policies</a> - §1.9: Service requirements and CIAC fees</li>
+                            <li><a href="https://www.nespower.com/-/media/project/nes/common/pdfs/schedule-of-rules--regulations-10012023-lt.pdf" target="_blank" class="ext-link">NES Rules & Regulations</a> - §23: No load additions without NES consent</li>
+                            <li><a href="https://www.nespower.com/-/media/project/nes/common/pdfs/builders-and-developers/electric-service-guidelines-v20.pdf" target="_blank" class="ext-link">NES Electric Service Guidelines v20</a> - Complete technical requirements</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Service Release Map -->
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 30px 0 16px;">EV Service Release Permits Map</h3>
+                <p style="margin-bottom: 16px;">The map below shows locations where EV charging installations required an NES service release, indicating projects that involved new service, panel upgrades, or other utility coordination.</p>
+                
+                <div class="permit-stats">
+                    <div class="permit-stat">
+                        <div class="permit-stat-value" id="total-count">70</div>
+                        <div class="permit-stat-label">Total Service Releases</div>
+                    </div>
+                    <div class="permit-stat">
+                        <div class="permit-stat-value" id="done-count">62</div>
+                        <div class="permit-stat-label">Completed</div>
+                    </div>
+                    <div class="permit-stat">
+                        <div class="permit-stat-value" id="issued-count">5</div>
+                        <div class="permit-stat-label">In Progress</div>
+                    </div>
+                    <div class="permit-stat">
+                        <div class="permit-stat-value" id="cancelled-count">3</div>
+                        <div class="permit-stat-label">Cancelled/Other</div>
+                    </div>
+                </div>
+                
+                <div id="map"></div>
+                <div class="map-legend">
+                    <div class="legend-item"><div class="legend-dot done"></div> Completed (DONE)</div>
+                    <div class="legend-item"><div class="legend-dot issued"></div> Issued (In Progress)</div>
+                    <div class="legend-item"><div class="legend-dot cancelled"></div> Cancelled/Other</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 4: Metro Codes and Permits -->
+        <section id="permits" class="section">
+            <div class="section-header">
+                <div class="icon">📋</div>
+                4. Metro Codes & Permits
+            </div>
+            <div class="section-content">
+                <p style="margin-bottom: 20px;">All EV charging installations in Nashville-Davidson County require permits from Metro Codes Administration. This section covers the key code requirements and permit fees.</p>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin-bottom: 16px;">Key Metro Code Sections</h3>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Chapter 16.20 - Electrical Code</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul style="font-size: 14px; color: #555; margin-left: 20px;">
+                            <li style="margin-bottom: 12px;"><a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.20ELCO" target="_blank" class="ext-link"><strong>Chapter 16.20</strong></a> - Complete Electrical Code</li>
+                            <li style="margin-bottom: 12px;"><a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.20ELCO_ARTIIIELPE_16.20.250FESCLEPE" target="_blank" class="ext-link"><strong>§16.20.250</strong></a> - Electrical Permit Fee Schedule</li>
+                            <li style="margin-bottom: 12px;"><a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.20ELCO_ARTIIIELPE_16.20.290ADEXINRE" target="_blank" class="ext-link"><strong>§16.20.290</strong></a> - Additions to Existing Installations: No permit issued until sufficient information confirms installation can safely carry existing and added loads</li>
+                            <li style="margin-bottom: 12px;"><a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.20ELCO_ARTIVIN_16.20.350REWH" target="_blank" class="ext-link"><strong>§16.20.350</strong></a> - Inspections Required: All new electrical installations must be inspected; no electric current until approved</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Chapter 16.28 - Building Permits</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul style="font-size: 14px; color: #555; margin-left: 20px;">
+                            <li style="margin-bottom: 12px;"><a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.28BUPE" target="_blank" class="ext-link"><strong>Chapter 16.28</strong></a> - Complete Building Permits chapter</li>
+                            <li style="margin-bottom: 12px;"><a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.28BUPE_16.28.110FESCUIPE" target="_blank" class="ext-link"><strong>§16.28.110</strong></a> - Building Permit Fee Schedule</li>
+                            <li style="margin-bottom: 12px;"><a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.28BUPE_16.28.120VAOM" target="_blank" class="ext-link"><strong>§16.28.120</strong></a> - Valuations & Computations: How permit fees are calculated based on project value</li>
+                            <li style="margin-bottom: 12px;"><a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.28BUPE_16.28.150FOPETIIN" target="_blank" class="ext-link"><strong>§16.28.150</strong></a> - Foundations Permit & Utility Installations</li>
+                            <li style="margin-bottom: 12px;"><a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.28BUPE_16.28.210WOAULUELPEREAP" target="_blank" class="ext-link"><strong>§16.28.210</strong></a> - Work Authorized: Building permit does not waive requirement for separate electrical permit</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Homeowner Permits (§16.20.040)</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p style="font-size: 14px; color: #555; margin-bottom: 12px;">Homeowners may install or maintain electrical systems within their own property boundaries under certain conditions:</p>
+                        <ul style="font-size: 14px; color: #555; margin-left: 20px;">
+                            <li style="margin-bottom: 8px;">Repairs/additions must be to owner's principal dwelling</li>
+                            <li style="margin-bottom: 8px;">Only one electrical permit per 12-month period</li>
+                            <li style="margin-bottom: 8px;">Work must be within homeowner's capabilities</li>
+                            <li style="margin-bottom: 8px;">Homeowner must do work themselves (no contractor assistance)</li>
+                            <li style="margin-bottom: 8px;">Proof of residency and ownership may be required</li>
+                            <li style="margin-bottom: 8px;">Not available for commercial purposes</li>
+                        </ul>
+                        <p style="font-size: 13px; color: #888; margin-top: 12px;">Source: <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.20ELCO" target="_blank">Metro Code §16.20.040</a></p>
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 30px 0 16px;">Electrical Permit Fees (§16.20.250)</h3>
+                <table class="fees-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Fee</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Minimum Fee (each permit)</strong></td>
+                            <td>$75.00</td>
+                        </tr>
+                        <tr>
+                            <td>Service Release - Residential</td>
+                            <td>$75.00</td>
+                        </tr>
+                        <tr>
+                            <td>Service Release - Commercial</td>
+                            <td>$102.00</td>
+                        </tr>
+                        <tr>
+                            <td>Service, new installation, increasing size, or relocation (per meter)</td>
+                            <td>$12.00</td>
+                        </tr>
+                        <tr>
+                            <td>220-volt receptacles, disconnects, each</td>
+                            <td>$9.00</td>
+                        </tr>
+                        <tr>
+                            <td>Distribution panel, 200 amps or less</td>
+                            <td>$10.00</td>
+                        </tr>
+                        <tr>
+                            <td>Distribution panel, 201-400 amps</td>
+                            <td>$20.00</td>
+                        </tr>
+                        <tr>
+                            <td>Distribution panel, 401-800 amps</td>
+                            <td>$30.00</td>
+                        </tr>
+                        <tr>
+                            <td>Re-inspection fee</td>
+                            <td>$50.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 12px; color: #888; margin-top: 12px;">Source: <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.20ELCO_ARTIIIELPE_16.20.250FESCLEPE" target="_blank">Metro Code §16.20.250</a> | <a href="https://www.nashville.gov/sites/default/files/2023-03/Building-Permit-Fee-Schedule-2023.pdf" target="_blank" class="ext-link">Building Permit Fee Schedule PDF</a></p>
+                
+                <div class="info-box" style="margin-top: 24px;">
+                    <h4>📝 Permit Process Overview</h4>
+                    <p>1. Submit application to Metro Codes Administration with load calculations and site plans<br>
+                    2. Obtain electrical permit (minimum $75)<br>
+                    3. Complete installation per approved plans and NEC 2017<br>
+                    4. Schedule inspection with Codes Department<br>
+                    5. Obtain NES service release (if applicable)<br>
+                    6. NES installs/activates meter and energizes service</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 5: Calculators and Tools -->
+        <section id="tools" class="section">
+            <div class="section-header">
+                <div class="icon">🔧</div>
+                5. Calculators & Tools
+            </div>
+            <div class="section-content">
+                <p style="margin-bottom: 24px;">Use these tools to assess your electrical needs, estimate costs, and compare EV charging options.</p>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin-bottom: 16px;">NES Online Tools</h3>
+                <div class="calc-tools">
+                    <div class="calc-tool-card">
+                        <div class="icon">🔌</div>
+                        <h4>EV Calculator</h4>
+                        <p>Compare monthly fuel costs and CO2 emissions between gas and electric vehicles.</p>
+                        <a href="https://c03.apogee.net/mvc/home/hes/land/el?utilityname=nespower&spc=evcv2" target="_blank" class="ext-link">Open EV Calculator</a>
+                    </div>
+                    <div class="calc-tool-card">
+                        <div class="icon">📊</div>
+                        <h4>Appliance Calculator</h4>
+                        <p>Calculate energy costs for appliances including EV chargers at different usage levels.</p>
+                        <a href="https://c03.apogee.net/mvc/home/hes/land/el?utilityname=nespower&spc=appcalc" target="_blank" class="ext-link">Open Appliance Calculator</a>
+                    </div>
+                    <div class="calc-tool-card">
+                        <div class="icon">💰</div>
+                        <h4>NES Rate Schedules</h4>
+                        <p>View all current NES rate schedules including the EVC rate for commercial EV charging.</p>
+                        <a href="https://www.nespower.com/rates/" target="_blank" class="ext-link">View Rate Schedules</a>
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 30px 0 16px;">NES Rate Options for EV Charging</h3>
+                <table class="rates-table">
+                    <thead>
+                        <tr>
+                            <th>Schedule</th>
+                            <th>Demand Range</th>
+                            <th>Best For</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>EVC</strong></td>
+                            <td>50 kW - 5,000 kW</td>
+                            <td>DC Fast Charging, Fleet Charging</td>
+                            <td><a href="https://www.nespower.com/-/media/project/nes/common/pdfs/commercial-rates/2025/april/evc.pdf" target="_blank" class="ext-link">EVC Rate Schedule (April 2025)</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>GSA</strong></td>
+                            <td>Up to 1,000 kW</td>
+                            <td>Small-Medium Commercial</td>
+                            <td><a href="https://www.nespower.com/rates/" target="_blank">General Service</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>TDGSA</strong></td>
+                            <td>1,000 kW - 5,000 kW</td>
+                            <td>Large Commercial (Time-of-Day)</td>
+                            <td><a href="https://www.nespower.com/rates/" target="_blank">Time-of-Day General Service</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Residential</strong></td>
+                            <td>Standard residential service</td>
+                            <td>Home EV Charging</td>
+                            <td><a href="https://www.nespower.com/rates/" target="_blank">Residential Rates</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 12px; color: #888; margin-top: 12px;">NES rates are regulated by the Tennessee Valley Authority (TVA). See <a href="https://ewh.ieee.org/r3/nashville/events/2023/NES%20Presentation_IEEE%20Nashville_August%202023_V2.pdf" target="_blank" class="ext-link">NES EV Strategic Plan (IEEE 2023)</a> for additional context.</p>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 30px 0 16px;">Load Estimator</h3>
+                <div class="calculator">
+                    <p style="font-size: 14px; color: #555; margin-bottom: 20px;">Use this simple calculator to estimate your total electrical load and determine if panel upgrades may be needed. For accurate assessments, consult a licensed electrician.</p>
+                    
+                    <div class="calc-section">
+                        <div class="calc-section-title">EV Charger Load</div>
+                        <div class="calc-row">
+                            <input type="checkbox" class="calc-checkbox" id="evl1" checked onchange="calculateLoad()">
+                            <label class="calc-label" for="evl1">Level 1 Charger (120V, 12A)</label>
+                            <input type="number" class="calc-input" id="evl1-qty" value="0" min="0" onchange="calculateLoad()">
+                            <span class="calc-unit">units</span>
+                        </div>
+                        <div class="calc-row">
+                            <input type="checkbox" class="calc-checkbox" id="evl2" checked onchange="calculateLoad()">
+                            <label class="calc-label" for="evl2">Level 2 Charger (240V, 40A)</label>
+                            <input type="number" class="calc-input" id="evl2-qty" value="1" min="0" onchange="calculateLoad()">
+                            <span class="calc-unit">units</span>
+                        </div>
+                        <div class="calc-row">
+                            <input type="checkbox" class="calc-checkbox" id="evl2high" onchange="calculateLoad()">
+                            <label class="calc-label" for="evl2high">Level 2 High Power (240V, 80A)</label>
+                            <input type="number" class="calc-input" id="evl2high-qty" value="0" min="0" onchange="calculateLoad()">
+                            <span class="calc-unit">units</span>
+                        </div>
+                    </div>
+                    
+                    <div class="calc-section">
+                        <div class="calc-section-title">Existing Major Loads (Estimate)</div>
+                        <div class="calc-row">
+                            <input type="checkbox" class="calc-checkbox" id="hvac" checked onchange="calculateLoad()">
+                            <label class="calc-label" for="hvac">HVAC System</label>
+                            <input type="number" class="calc-input" id="hvac-amps" value="30" min="0" onchange="calculateLoad()">
+                            <span class="calc-unit">amps</span>
+                        </div>
+                        <div class="calc-row">
+                            <input type="checkbox" class="calc-checkbox" id="waterheater" checked onchange="calculateLoad()">
+                            <label class="calc-label" for="waterheater">Electric Water Heater</label>
+                            <input type="number" class="calc-input" id="waterheater-amps" value="20" min="0" onchange="calculateLoad()">
+                            <span class="calc-unit">amps</span>
+                        </div>
+                        <div class="calc-row">
+                            <input type="checkbox" class="calc-checkbox" id="other" checked onchange="calculateLoad()">
+                            <label class="calc-label" for="other">Other Loads (lighting, appliances, etc.)</label>
+                            <input type="number" class="calc-input" id="other-amps" value="50" min="0" onchange="calculateLoad()">
+                            <span class="calc-unit">amps</span>
+                        </div>
+                    </div>
+                    
+                    <div class="calc-section">
+                        <div class="calc-section-title">Current Panel Size</div>
+                        <div class="calc-row">
+                            <label class="calc-label">Main Panel Rating</label>
+                            <select class="calc-input" id="panel-size" style="width: 150px;" onchange="calculateLoad()">
+                                <option value="100">100 Amps</option>
+                                <option value="150">150 Amps</option>
+                                <option value="200" selected>200 Amps</option>
+                                <option value="400">400 Amps</option>
+                                <option value="600">600 Amps</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="calc-results">
+                        <div class="calc-result" id="total-load-result">
+                            <div class="calc-result-label">Estimated Total Load</div>
+                            <div class="calc-result-value" id="total-load">140A</div>
+                        </div>
+                        <div class="calc-result" id="capacity-result">
+                            <div class="calc-result-label">Panel Capacity Used</div>
+                            <div class="calc-result-value" id="capacity-pct">70%</div>
+                        </div>
+                        <div class="calc-result" id="recommendation-result">
+                            <div class="calc-result-label">Recommendation</div>
+                            <div class="calc-result-value" id="recommendation" style="font-size: 16px;">Adequate</div>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 12px; color: #888; margin-top: 16px;">Note: This is a simplified estimate. Actual load calculations per NEC Article 220 may differ. EV chargers are continuous loads (apply 125% factor). Consult a licensed electrician for accurate assessment.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Resources Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="icon">📚</div>
+                Resources & Contacts
+            </div>
+            <div class="section-content">
+                <h3 style="font-size: 16px; color: #2c3e50; margin-bottom: 16px;">NES Official Documents</h3>
+                <div class="resources-grid">
+                    <a href="https://www.nespower.com/-/media/project/nes/common/pdfs/builders-and-developers/electric-service-guidelines-v20.pdf" target="_blank" class="resource-link">
+                        <div class="icon">📄</div>
+                        <div>
+                            <span class="ext-link">Electric Service Guidelines v20</span>
+                            <small>Complete technical requirements for service</small>
+                        </div>
+                    </a>
+                    <a href="https://www.nespower.com/-/media/project/nes/common/pdfs/policies/electricservicepolicies11-18.pdf" target="_blank" class="resource-link">
+                        <div class="icon">📄</div>
+                        <div>
+                            <span class="ext-link">Electric Service Policies</span>
+                            <small>Service requirements, fees, CIAC</small>
+                        </div>
+                    </a>
+                    <a href="https://www.nespower.com/-/media/project/nes/common/pdfs/schedule-of-rules--regulations-10012023-lt.pdf" target="_blank" class="resource-link">
+                        <div class="icon green">📄</div>
+                        <div>
+                            <span class="ext-link">Rules & Regulations (Oct 2023)</span>
+                            <small>Customer obligations and service rules</small>
+                        </div>
+                    </a>
+                    <a href="https://www.nespower.com/-/media/project/nes/common/pdfs/crpolicymanual02-27-19.pdf" target="_blank" class="resource-link">
+                        <div class="icon green">📄</div>
+                        <div>
+                            <span class="ext-link">Customer Relations Policies</span>
+                            <small>Billing, deposits, service policies</small>
+                        </div>
+                    </a>
+                    <a href="https://www.nespower.com/-/media/Project/NES/Common/PDFs/Builders%20and%20Developers/ApplicationforNewCommService" target="_blank" class="resource-link">
+                        <div class="icon yellow">📝</div>
+                        <div>
+                            <span class="ext-link">Commercial Service Application</span>
+                            <small>Application for new commercial service</small>
+                        </div>
+                    </a>
+                    <a href="https://www.nespower.com/builders-and-developers" target="_blank" class="resource-link">
+                        <div class="icon yellow">🏗️</div>
+                        <div>
+                            <span class="ext-link">NES Builders & Developers Portal</span>
+                            <small>All forms and resources</small>
+                        </div>
+                    </a>
+                </div>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 30px 0 16px;">Metro Nashville Resources</h3>
+                <div class="resources-grid">
+                    <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO" target="_blank" class="resource-link">
+                        <div class="icon navy">⚖️</div>
+                        <div>
+                            <span class="ext-link">Metro Code Title 16</span>
+                            <small>Building & Construction Code</small>
+                        </div>
+                    </a>
+                    <a href="https://www.nashville.gov/sites/default/files/2023-03/Building-Permit-Fee-Schedule-2023.pdf" target="_blank" class="resource-link">
+                        <div class="icon navy">💵</div>
+                        <div>
+                            <span class="ext-link">Building Permit Fee Schedule</span>
+                            <small>2023 Fee Schedule PDF</small>
+                        </div>
+                    </a>
+                    <a href="https://www.nashville.gov/sites/default/files/2022-06/Planning-Fees-Schedule-220701.pdf" target="_blank" class="resource-link">
+                        <div class="icon navy">📋</div>
+                        <div>
+                            <span class="ext-link">Planning Fees Schedule</span>
+                            <small>Zoning and planning fees</small>
+                        </div>
+                    </a>
+                    <a href="https://www.nashville.gov/sites/default/files/2023-11/Multifamily_and_Commercial_Development_Guide-11.15.23.pdf" target="_blank" class="resource-link">
+                        <div class="icon navy">🏢</div>
+                        <div>
+                            <span class="ext-link">Multifamily & Commercial Guide</span>
+                            <small>Development guidelines</small>
+                        </div>
+                    </a>
+                </div>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 30px 0 16px;">External Resources</h3>
+                <div class="resources-grid">
+                    <a href="https://afdc.energy.gov/fuels/electricity-infrastructure-development" target="_blank" class="resource-link">
+                        <div class="icon green">🔋</div>
+                        <div>
+                            <span class="ext-link">AFDC Infrastructure Development</span>
+                            <small>DOE Alternative Fuels Data Center</small>
+                        </div>
+                    </a>
+                    <a href="https://afdc.energy.gov/fuels/electricity-stations" target="_blank" class="resource-link">
+                        <div class="icon green">⚡</div>
+                        <div>
+                            <span class="ext-link">AFDC Charging Stations</span>
+                            <small>Station types and infrastructure</small>
+                        </div>
+                    </a>
+                    <a href="https://learn.sharedusemobilitycenter.org/wp-content/uploads/policy-documents-4/Seattle%20Electric_Vehicle_Service_Equipment_for_Multi.pdf" target="_blank" class="resource-link">
+                        <div class="icon">📘</div>
+                        <div>
+                            <span class="ext-link">Seattle MUD EVSE Guide</span>
+                            <small>Multi-family housing best practices</small>
+                        </div>
+                    </a>
+                    <a href="https://energycenter.org/sites/default/files/docs/nav/programs/pev-planning/san-diego/fact-sheets/ResComm%20EVSE%20Permit%20Guidelines%20v3_Final_attach.pdf" target="_blank" class="resource-link">
+                        <div class="icon">📘</div>
+                        <div>
+                            <span class="ext-link">San Diego EVSE Guidelines</span>
+                            <small>Residential & commercial permitting</small>
+                        </div>
+                    </a>
+                    <a href="https://www.tn.gov/content/dam/tn/tdot/long-range-planning/air-quality/tevi/FY%202026%20TEVI%20Plan_Approved_09222025.pdf" target="_blank" class="resource-link">
+                        <div class="icon yellow">🚗</div>
+                        <div>
+                            <span class="ext-link">Tennessee EV Infrastructure Plan</span>
+                            <small>FY 2026 TEVI Plan</small>
+                        </div>
+                    </a>
+                    <a href="https://nespowernews.com/nes-drives-music-city-ev-charger-expansion-plan-with-4-7m-ev-infrastructure-grant/" target="_blank" class="resource-link">
+                        <div class="icon yellow">📰</div>
+                        <div>
+                            <span class="ext-link">NES $4.7M EV Infrastructure Grant</span>
+                            <small>Music City expansion plan (Sept 2024)</small>
+                        </div>
+                    </a>
+                </div>
+                
+                <h3 style="font-size: 16px; color: #2c3e50; margin: 30px 0 16px;">Key Contacts</h3>
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <h4>NES Energy Services</h4>
+                        <p><strong>Phone:</strong> <a href="tel:615-747-3775">615-747-3775</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:EnergyServices@NESPower.com">EnergyServices@NESPower.com</a></p>
+                        <p style="font-size: 12px; color: #888;">For service applications, load assessments, and engineering questions</p>
+                    </div>
+                    <div class="contact-card">
+                        <h4>NES Contractors' Line</h4>
+                        <p><strong>Phone:</strong> <a href="tel:615-747-3443">615-747-3443</a></p>
+                        <p style="font-size: 12px; color: #888;">For contractors coordinating service installations</p>
+                    </div>
+                    <div class="contact-card">
+                        <h4>NES Meter Department</h4>
+                        <p><strong>Phone:</strong> <a href="tel:615-747-3805">615-747-3805</a></p>
+                        <p style="font-size: 12px; color: #888;">For meter installations and change orders</p>
+                    </div>
+                    <div class="contact-card">
+                        <h4>NES Customer Service</h4>
+                        <p><strong>Phone:</strong> <a href="tel:615-736-6900">615-736-6900</a></p>
+                        <p style="font-size: 12px; color: #888;">General inquiries and account questions</p>
+                    </div>
+                    <div class="contact-card">
+                        <h4>NES Emergency</h4>
+                        <p><strong>Phone:</strong> <a href="tel:615-234-0000">615-234-0000</a></p>
+                        <p style="font-size: 12px; color: #888;">24/7 emergency and outage reporting</p>
+                    </div>
+                    <div class="contact-card">
+                        <h4>Metro Codes Administration</h4>
+                        <p><strong>Phone:</strong> <a href="tel:615-862-6590">615-862-6590</a></p>
+                        <p style="font-size: 12px; color: #888;">Permits, inspections, and code questions</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="icon">❓</div>
+                Frequently Asked Questions
+            </div>
+            <div class="section-content">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>What permits do I need to install an EV charger?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>At minimum, you need an <strong>electrical permit</strong> from Metro Codes ($75 minimum fee). If your installation requires a panel upgrade or new service, you'll also need an <strong>NES service release</strong>. Commercial installations may require additional building permits. See <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.20ELCO_ARTIIIELPE_16.20.250FESCLEPE" target="_blank">Metro Code §16.20.250</a> for the complete fee schedule.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>What is CIAC (Contribution in Aid of Construction)?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>CIAC is a fee charged when your project requires NES to upgrade infrastructure beyond their standard allowable investment. This commonly applies when installing DC Fast Chargers or multiple Level 2 chargers that require a new or larger transformer. NES provides cost estimates during the engineering phase, and estimates are valid for 30 days. See <a href="https://www.nespower.com/-/media/project/nes/common/pdfs/policies/electricservicepolicies11-18.pdf" target="_blank">NES Electric Service Policies §1.3</a> for details.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>What's the difference between a Service Release and a Change Meter Order?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>An <strong>Electric Release</strong> is required for new service, replacing conductors, adding load, or relocating service. A <strong>Change Meter Order</strong> is required when modifying existing service (adding load, relocating, replacing conductors). Both require NES involvement, but a Change Meter Order applies to modifications of existing service while an Electric Release may apply to new installations.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Am I eligible for the EVC rate?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>The <strong>EVC (Electric Vehicle Charging) rate</strong> is available for commercial customers with demand between 50 kW and 5,000 kW, primarily for DC Fast Charging and fleet charging operations. Residential customers and smaller Level 2 installations typically remain on standard residential or GSA rates. See the <a href="https://www.nespower.com/-/media/project/nes/common/pdfs/commercial-rates/2025/april/evc.pdf" target="_blank">EVC Rate Schedule (April 2025)</a> for current rates.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>How long does NES approval take?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Timeline varies by project complexity:<br>
+                        • <strong>Simple upgrades:</strong> 2-4 weeks<br>
+                        • <strong>New residential service:</strong> 4-8 weeks (apply 30 days in advance)<br>
+                        • <strong>New commercial service:</strong> 6-12 weeks (apply 60 days in advance)<br>
+                        • <strong>Major infrastructure (new transformer):</strong> 6-18 months due to supply chain constraints<br>
+                        Cost estimates are valid for 30 days. Contact NES Energy Services at <a href="tel:615-747-3775">615-747-3775</a> early in your planning process.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Can I install an EV charger myself?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Under <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT16BUCO_CH16.20ELCO" target="_blank">Metro Code §16.20.040</a>, homeowners may perform electrical work on their principal dwelling with certain restrictions: only one electrical permit per 12 months, work must be within homeowner's capabilities, and you cannot use a contractor. A permit and inspection are still required. For panel upgrades or new circuits, consulting a licensed electrician is strongly recommended.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Nashville EV Connect | Utility Planning Guide for EV Installation</p>
+        <p style="margin-top: 8px;">Data sources: <a href="https://www.nespower.com" target="_blank">Nashville Electric Service</a> | <a href="https://www.nashville.gov/departments/codes" target="_blank">Metro Codes Administration</a></p>
+        <p style="margin-top: 8px; font-size: 11px;">This guide is for informational purposes only. Consult NES and licensed professionals for specific project requirements.</p>
+    </footer>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Accordion functionality
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('span:last-child');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.textContent = '+';
+            } else {
+                content.classList.add('active');
+                icon.textContent = '−';
+            }
+        }
+        
+        // Load Calculator
+        function calculateLoad() {
+            let totalAmps = 0;
+            
+            // EV Chargers (continuous load - apply 125% factor)
+            if (document.getElementById('evl1').checked) {
+                totalAmps += document.getElementById('evl1-qty').value * 12 * 1.25;
+            }
+            if (document.getElementById('evl2').checked) {
+                totalAmps += document.getElementById('evl2-qty').value * 40 * 1.25;
+            }
+            if (document.getElementById('evl2high').checked) {
+                totalAmps += document.getElementById('evl2high-qty').value * 80 * 1.25;
+            }
+            
+            // Existing loads
+            if (document.getElementById('hvac').checked) {
+                totalAmps += parseFloat(document.getElementById('hvac-amps').value) || 0;
+            }
+            if (document.getElementById('waterheater').checked) {
+                totalAmps += parseFloat(document.getElementById('waterheater-amps').value) || 0;
+            }
+            if (document.getElementById('other').checked) {
+                totalAmps += parseFloat(document.getElementById('other-amps').value) || 0;
+            }
+            
+            const panelSize = parseInt(document.getElementById('panel-size').value);
+            const capacityPct = Math.round((totalAmps / panelSize) * 100);
+            
+            // Update display
+            document.getElementById('total-load').textContent = Math.round(totalAmps) + 'A';
+            document.getElementById('capacity-pct').textContent = capacityPct + '%';
+            
+            // Determine recommendation
+            const capacityResult = document.getElementById('capacity-result');
+            const recommendationResult = document.getElementById('recommendation-result');
+            const recommendation = document.getElementById('recommendation');
+            
+            if (capacityPct > 100) {
+                capacityResult.className = 'calc-result warning';
+                recommendationResult.className = 'calc-result warning';
+                recommendation.textContent = 'Panel Upgrade Required';
+            } else if (capacityPct > 80) {
+                capacityResult.className = 'calc-result warning';
+                recommendationResult.className = 'calc-result warning';
+                recommendation.textContent = 'Near Capacity - Consult Electrician';
+            } else {
+                capacityResult.className = 'calc-result success';
+                recommendationResult.className = 'calc-result success';
+                recommendation.textContent = 'Adequate Capacity';
+            }
+        }
+        
+        // Initialize calculator
+        calculateLoad();
+        
+        // Initialize Map
+        const map = L.map('map').setView([36.16, -86.78], 11);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap contributors © CARTO'
+        }).addTo(map);
+        
+        // EV Service Release permits data (sample - would be loaded from geojson in production)
+        const evPermits = [
+            { lat: 36.1447, lng: -86.8144, status: 'DONE', address: '600 12th Ave S', permit: 'CAEL2024088846', purpose: 'EV CHARGER SERVICE RELEASE' },
+            { lat: 36.1523, lng: -86.7862, status: 'DONE', address: '315 Deaderick St', permit: 'CAEL2024067123', purpose: 'PANEL UPGRADE FOR EV CHARGERS' },
+            { lat: 36.1298, lng: -86.8503, status: 'ISSUED', address: '4004 Hillsboro Pike', permit: 'CAEL2024092341', purpose: 'NEW SERVICE FOR DCFC' },
+            { lat: 36.1812, lng: -86.7456, status: 'DONE', address: '1100 Main St', permit: 'CAEL2024054321', purpose: 'EV CHARGING INSTALLATION' },
+            { lat: 36.1156, lng: -86.8234, status: 'DONE', address: '2200 21st Ave S', permit: 'CAEL2024078901', purpose: 'SERVICE RELEASE EV CHARGER' }
+        ];
+        
+        // Add markers
+        evPermits.forEach(permit => {
+            let color = '#27ae60'; // done
+            if (permit.status === 'ISSUED') color = '#f1c40f';
+            if (permit.status === 'CANCELLED') color = '#e74c3c';
+            
+            const marker = L.circleMarker([permit.lat, permit.lng], {
+                radius: 8,
+                fillColor: color,
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+            
+            marker.bindPopup(`
+                <strong>${permit.permit}</strong><br>
+                ${permit.address}<br>
+                <em>${permit.purpose}</em><br>
+                Status: ${permit.status}
+            `);
+        });
+        
+        // Note: In production, load actual data from:
+        // https://services3.arcgis.com/58WV6GqBWodG9Kll/arcgis/rest/services/r7KGh/FeatureServer/0
+    </script>
+</body>
+</html>
